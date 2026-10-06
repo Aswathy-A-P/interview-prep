@@ -38,7 +38,7 @@ class OrderFlowIntegrationTest extends AbstractIntegrationTest {
                 .statusCode(200);
     }
 
-    private static int placeOrder(String token, String key, int expectedStatus) {
+    private static Integer placeOrder(String token, String key, int expectedStatus) {
         return given().auth()
                 .oauth2(token)
                 .header("Idempotency-Key", key)
