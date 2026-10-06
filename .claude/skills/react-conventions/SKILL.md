@@ -40,63 +40,62 @@ held to. Keep it free of counts, versions, issue numbers, file inventories and d
 
 - **Scope**: `frontend/`
 
-This app is a client of the REST API in `backend/`: domain and business rules belong to the backend,
-and this app calls endpoints and renders the results. Every path below is relative to `frontend/`.
+
+This app is a client of the REST API in `backend/`, whose contract is `docs/api.md`: business rules
+belong to the backend, and this app calls endpoints and renders the results. Every path below is
+relative to `frontend/`.
 
 **Architecture rules**:
-- A routed screen lives in `src/pages/` and every route is registered in `src/App.jsx`.
-- A component lives in `src/components/` with its test beside it.
-- Imports are relative and never climb more than one level.
-- Every HTTP call goes through the single API module `src/api.js`, whose base URL comes from
-  `import.meta.env.VITE_API_BASE_URL` and falls back to the `/api` path the Vite dev server proxies.
-  A component never calls `fetch` itself.
-- Money, where the app shows it, is parsed and formatted through one helper module in `src/`.
-- Styling uses the class names and colour tokens in `src/index.css`, light and dark. An inline `style`
-  object carries only a value computed at runtime.
+- TypeScript everywhere under `src/`, strict mode, no `any` that escapes a module boundary.
+- Feature folders under `src/features/<feature>/` hold that feature's pages, components, query hooks
+  and tests. Shared primitives live in `src/components/ui/`, shared layout in `src/components/`.
+- A new feature copies the structure of an existing one, so every feature reads the same way.
+- Every route is registered in `src/App.tsx`; protected routes go through the auth guards, and admin
+  routes through the admin guard.
+- Every HTTP call goes through the single client in `src/lib/api/`, whose base URL comes from
+  `import.meta.env.VITE_API_BASE_URL` and falls back to the `/api/v1` path the dev server and nginx
+  proxy. A component never calls `fetch` itself. The types in `src/lib/api/types.ts` mirror the contract.
+- Styling is Tailwind utility classes through the primitives in `src/components/ui/`.
 - A new dependency justifies its bundle cost.
 
 **State, data and API rules**:
-- `src/api.js` declares every endpoint the app calls; no URL is hardcoded at a call site.
-- A page loads its server data, and renders the loading, empty and error states of that load.
-- The shapes `src/api.js` sends and reads match the backend's request and response DTOs, and the
-  backend's error envelope is read in one place, `src/api.js`, which raises an `ApiError` carrying the
-  message and field errors.
-- A form validates on the client with the same constraints the backend enforces, and shows the error
-  the backend returns when it still rejects the input.
-- A typed amount is validated and turned into integer cents before any arithmetic, matching the
-  backend's rounding. Floating point never sums money.
-- An effect declares every dependency it reads, cleans up its timers and subscriptions, and ignores a
-  response that arrives after the component unmounts or its dependency changes. State is never set
-  synchronously in an effect body; derive it during render or reset it with a `key`.
-- State is never mutated in place; an update produces a new object or array.
+- Server state lives in TanStack Query only; a mutation invalidates the queries it changes. React
+  Context holds auth and UI state, never a copy of server data.
+- Every form uses React Hook Form with a Zod schema that mirrors the backend's constraints, and shows
+  the backend's `ProblemDetail` detail and field errors when it still rejects the input.
+- The client reads the `ProblemDetail` envelope in one place and raises an `ApiError`.
+- The access token lives in memory and the refresh token in `localStorage`; a `401` triggers one
+  deduplicated refresh and a retry, and a failed refresh logs the user out.
+- Order placement sends an `Idempotency-Key` that stays stable across retries of the same checkout.
+- Money is displayed through `src/lib/money.ts`; totals come from the server and are never summed in
+  floating point on the client.
+- Every data-backed view renders its loading, empty and error states.
+- An effect declares every dependency it reads and cleans up after itself; state is never set
+  synchronously in an effect body, and never mutated in place.
 - A list rendered from data is keyed by a stable id, never by its array index.
-- Context holds cross-cutting state only; it is not a cache for server data.
 
 **Testing rules**:
 - Every new or changed component or page has a test beside it, written with Vitest and React Testing
-  Library, that exercises behaviour.
-- A test drives the UI the way a person would, through `userEvent` rather than `fireEvent`.
+  Library, that exercises behaviour through `userEvent`.
 - A test asserts what the user can observe, not implementation details.
-- A test mocks the network at `src/api.js`, never by stubbing a component's internals; only the API
-  module's own test stubs `fetch`.
+- A test mocks the network at the API layer; only the client's own test stubs `fetch`.
 
 **Blocking in review**:
-- User-supplied data rendered as raw HTML (`dangerouslySetInnerHTML`) without sanitisation.
-- A secret, API key or credential in source, or a token or personal data written to the console.
+- User-supplied data rendered as raw HTML without sanitisation.
+- A secret or credential in source, or a token or personal data written to the console.
 - A component that calls `fetch` itself, or an endpoint URL hardcoded at a call site.
-- A request or response shape that no longer matches the backend DTO it talks to.
-- A request whose loading or error state is not handled, so the UI crashes or hangs.
-- Money summed in floating point, or an amount sent without the validation the backend enforces.
-- An effect with a missing dependency, no cleanup, or a synchronous state update, causing a stale
-  value, a leak, a cascading render or a state update after unmount.
-- State mutated in place, or a reorderable list keyed by index.
-- A form that submits without the validation the backend enforces, or drops the backend's error.
+- A type or request shape that no longer matches `docs/api.md`.
+- Server data held outside TanStack Query, or a mutation that leaves stale queries.
+- A form without its Zod schema, or one that drops the backend's error.
+- A request whose loading or error state is not handled.
+- A protected or admin page reachable without its guard.
+- An effect with a missing dependency or no cleanup; state mutated in place; a list keyed by index.
 - A new or changed component or page with no test.
 - A comment in a changed source file.
 
 **Definition of done**:
 - The frontend gate commands registered in `CLAUDE.md` pass.
-- Every call goes through `src/api.js`.
+- Every call goes through `src/lib/api/`.
 - Loading, empty and error states render for every data-backed view.
-- New routes are registered.
+- New routes are registered and guarded.
 - Every new or changed component or page has a test that exercises behaviour.

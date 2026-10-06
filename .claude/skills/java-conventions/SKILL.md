@@ -40,82 +40,89 @@ held to. Keep it free of counts, versions, issue numbers, file inventories and d
 
 - **Scope**: `backend/`
 
-Every path below is relative to `backend/`.
+
+Every path below is relative to `backend/`. The build plan in the issue is the product source of truth;
+these rules are how its code is held to account.
 
 **Architecture rules**:
-- The application has one base package under `src/main/java`, organised by layer: `controller/`,
-  `service/`, `repository/`, `model/`, `dto/`, `exception/`, `config/` and `util/`. A layer calls only
-  the one below it: controller -> service -> repository -> model.
+- A modular monolith under one base package `com.interviewprep.shop`: `common/`, `auth/`, `catalog/`,
+  `cart/`, `order/`, `payment/` (and `ai/` when added). Each module splits into `api/` (controllers and
+  request/response records), `application/` (services and use cases), `domain/` (entities, domain logic,
+  repository interfaces) and `infrastructure/` (external clients and adapters).
+- A module reaches another only through its `application/` services, never through its repositories or
+  entities' internals.
 - A controller holds no business logic: it validates input, calls one service method and returns its
-  result.
-- An entity in `model/` never crosses the controller boundary. Requests and responses are records in
-  `dto/`, and a response record builds itself from an entity through a static `from(...)` factory.
-- Cross-cutting configuration such as CORS lives in `config/`; the global exception handler and the
-  domain exceptions live in `exception/`.
+  result. State transitions and invariants live on the entity or in the service.
+- An entity never crosses the controller boundary. Requests and responses are Java records in `api/`.
+- An external dependency such as a payment provider sits behind an interface in the module, with its
+  implementation in `infrastructure/` chosen by configuration (strategy pattern).
+- Side effects of a committed change, such as notifications after an order is placed, run from a
+  domain event handled by `@TransactionalEventListener`.
 - Dependency injection is constructor injection with `final` fields, never field injection.
 
 **State, data and API rules**:
-- Persistence is Spring Data JPA over a file-based H2 database, so data survives a restart. A primary
-  key is a `Long` with `GenerationType.IDENTITY`; an enum persists as `@Enumerated(EnumType.STRING)`.
-- Money, where the domain has it, is a whole number of cents in a `long` inside the domain and a
-  `BigDecimal` with at most two decimal places at the API boundary, converted only through one helper in
-  `util/`. Never `double` or `float`.
-- A read-only service method carries `@Transactional(readOnly = true)`; a method that writes more
-  than one row, or reads then writes, carries `@Transactional`.
-- Queries address N+1 risk with `@EntityGraph` or `JOIN FETCH`. A `@Query` binds its parameters and is
+- Persistence is Spring Data JPA over PostgreSQL. The schema is owned by Flyway migrations in
+  `src/main/resources/db/migration`; `ddl-auto` is `validate`, and an applied migration is never edited:
+  a change adds a new versioned migration.
+- Stock is protected by optimistic locking (`@Version`); a lost update surfaces as `409`, never as an
+  oversell.
+- Order placement takes an `Idempotency-Key`; a repeated key for the same user returns the original
+  order rather than placing a second one.
+- Money is `BigDecimal` with two decimal places, `NUMERIC(12,2)` in the database. Never `double` or `float`.
+- A read-only service method carries `@Transactional(readOnly = true)`; a method that writes more than
+  one row, or reads then writes, carries `@Transactional`.
+- Queries address N+1 risk with `@EntityGraph` or `JOIN FETCH`. A query binds its parameters and is
   never assembled by string concatenation.
-- Paths sit under `/api/{resource}` as plural nouns, nesting a child resource under its parent as
-  `/api/{parents}/{parentId}/{children}`. Status codes are exact: `201` on create, `400` on invalid
-  input, `404` on a missing resource, `409` on a conflicting state.
-- A request DTO carries Jakarta validation constraints and the controller parameter carries `@Valid`.
-  A rule that needs stored data, such as ownership or a cross-field total, is checked in the service.
-- Every error response is the `ErrorResponse` envelope (`status`, `error`, `message`, `fieldErrors`)
-  produced by the single `@RestControllerAdvice`, with a message a person can act on. No stack trace or
-  SQL reaches a response.
-- A domain failure throws the exception named for its outcome in `exception/`, mapped once in the
-  advice. No bare `RuntimeException`, no `.get()` on an `Optional` where `.orElseThrow(...)` belongs,
-  no empty catch.
-- CORS allows the frontend origin from configuration (`app.cors.allowed-origins`), never `*`.
-- Logging goes through an SLF4J `Logger` with parameterized messages.
+- Paths are versioned under `/api/v1/{resource}` as plural nouns; admin operations under
+  `/api/v1/admin/...`. `docs/api.md` is the contract, and a change to it changes the frontend types in
+  the same diff. Status codes are exact: `201` on create, `204` on no content, `400` invalid input,
+  `401` unauthenticated, `403` forbidden, `404` missing, `409` conflicting state.
+- Every list endpoint is paginated and returns the shared page record; page size is capped.
+- A request record carries Jakarta validation constraints and the controller parameter carries `@Valid`.
+- Every error response is an RFC 7807 `ProblemDetail` produced by the single `@RestControllerAdvice` in
+  `common/`, including 401 and 403 from the security chain, and carries the request's correlation id.
+  No stack trace or SQL reaches a response.
+- A domain failure throws the exception named for its outcome, mapped once in the advice. No bare
+  `RuntimeException`, no `Optional.get()`, no empty catch.
+- Authentication is stateless JWT: short-lived access tokens, rotating refresh tokens stored hashed,
+  passwords hashed with BCrypt. A user reads and changes only their own cart and orders.
+- Configuration comes from profiles and environment variables. No secret, password hash or real key is
+  committed; CORS allows configured origins only, never `*`.
+- Logging goes through SLF4J with parameterized messages and the correlation id in the MDC.
 
 **Testing rules**:
 - Every code path a change adds or modifies has a test.
-- Pure domain logic, such as a calculation or a state transition, has plain JUnit unit tests. API behaviour is
-  tested through `MockMvc` against the full application with the in-memory H2 configuration in
-  `src/test/resources`, asserting the status code and the response body.
-- A test arranges, acts and asserts in that order, and shows the three phases through blank lines and
-  named locals rather than `// Given` / `// When` / `// Then` markers, which the comment conventions
-  ban like any other comment.
-- A test method name states the guarantee it checks.
-- Exceptions are asserted with `assertThrows` or `assertThatThrownBy`. Async work is never waited on
-  with `Thread.sleep`.
-- Edge cases are covered, not only the happy path: invalid input, a missing id, a reference to a
-  resource that does not belong to its parent, and the boundary of every business rule.
+- Domain logic and services have JUnit 5 + Mockito unit tests that need no Spring context.
+- Every endpoint has an integration test against real PostgreSQL through Testcontainers (the shared
+  integration base class) driven by RestAssured, asserting the status code and the body.
+- A test arranges, acts and asserts in that order, separated by blank lines and named locals, never by
+  comment markers.
+- A test method name states the guarantee it checks. Async work is never waited on with `Thread.sleep`.
+- Edge cases are covered: invalid input, a missing id, another user's resource, insufficient stock, an
+  illegal status change and a repeated idempotency key.
 
 **Blocking in review**:
-- A hardcoded secret, API key or credential.
-- A controller parameter without its input validation, or a request DTO without its constraints.
-- An entity returned from, or accepted by, a controller.
-- Business logic in a controller.
-- A wrong status code for the outcome.
-- An error response outside the `ErrorResponse` envelope, or one that leaks a stack trace, SQL or
-  internals.
-- A business rule enforced outside a transaction.
-- Money held as `double` or `float`, or arithmetic that loses or invents a cent.
-- A `@Query` assembled by string concatenation.
+- A hardcoded secret, API key, credential or password hash.
+- A controller parameter without its input validation, or a request record without its constraints.
+- An entity returned from, or accepted by, a controller; business logic in a controller.
+- A wrong status code, or an error response that is not a `ProblemDetail` or leaks internals.
+- An edited Flyway migration that has already been applied, or `ddl-auto` other than `validate`.
+- Stock changed without optimistic locking, or order placement without idempotency.
+- A user able to read or change another user's cart or orders, or an admin endpoint open to `USER`.
+- Money held as `double` or `float`.
+- A list endpoint without pagination; a query assembled by string concatenation.
 - A swallowed exception, a bare `Optional.get()`, or a bare `RuntimeException` for a domain failure.
-- CORS opened to `*`.
-- A response shape change without the matching change to the frontend API module in the same diff.
+- A contract change without the matching frontend change in the same diff.
 - A changed code path with no test.
 - Any comment in a source file, per `.claude/conventions/comment-conventions.md`.
 
 **Not flagged**:
-- Generated sources.
-- `application.properties` formatting.
-- Test data setup verbosity in `@BeforeEach`.
+- Generated sources, including MapStruct implementations.
+- Seed data volume in migrations.
+- Test data setup verbosity.
 
 **Definition of done**:
-- The backend gate commands registered in `CLAUDE.md` are green.
-- Layers hold: thin controllers, DTOs at the boundary, rules in the service.
-- Every error is an `ErrorResponse` with the right status.
+- The backend gate commands registered in `CLAUDE.md` are green, including the Testcontainers suite in CI.
+- Module boundaries hold; DTOs at the boundary; rules in the domain and services.
+- Every error is a `ProblemDetail` with the right status.
 - Every changed path has a test.

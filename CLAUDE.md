@@ -68,12 +68,15 @@ are `.claude/conventions/sibling-repos.md`, which holds the sibling table becaus
 is named there and nowhere else, and each `<stack>-conventions` skill, which holds the rules and the
 **Scope** of its own stack.
 
-- **Repo**: Aswathy-A-P/interview-prep — a single full-stack monorepo for an interview preparation
-  task: a React frontend in `frontend/` and a Java REST API in `backend/`, developed and shipped
-  together.
-- **Stack**: `frontend/` is a Vite + React single-page app with React Router, ESLint and Vitest + React
-  Testing Library; `backend/` is a Spring Boot REST service on Java 21 with Spring Data JPA over a
-  file-based H2 database, formatted with Spotless and built with the Maven wrapper.
+- **Repo**: Aswathy-A-P/interview-prep — a single full-stack monorepo for an e-commerce platform
+  (catalog, cart, checkout, orders, payments, admin) built for interview preparation: a React frontend
+  in `frontend/` and a Java REST API in `backend/`, run together with `docker compose up`.
+- **Stack**: `frontend/` is a Vite + React + TypeScript single-page app with Tailwind CSS, TanStack
+  Query, React Hook Form + Zod, React Router, ESLint and Vitest + React Testing Library, served by nginx
+  in Docker; `backend/` is a Spring Boot 3 REST service on Java 21, a modular monolith with Spring
+  Security (JWT), Spring Data JPA over PostgreSQL 16 with Flyway migrations, springdoc-openapi and
+  Testcontainers integration tests, formatted with Spotless and built with the Maven wrapper.
+  `docker-compose.yml` at the root runs PostgreSQL, the backend and the frontend.
 - **Package Manager**: npm in `frontend/`; maven (through `./mvnw`) in `backend/`
 - **Default Branch**: `main`
 - **Protected Branches**: `main`, `master`
