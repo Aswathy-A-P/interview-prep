@@ -1,0 +1,17 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Repo-wide false-positive allowlist."
+paths = [
+  '''\.env\.(example|sample|template)$''',
+  '''^\.gitleaks\.toml$''',
+  '''^\.claude/hooks/block-secrets\.cjs$''',
+  # Project-specific
+  '''(^|[\/])node_modules[\/]''',
+  '''(^|[\/])dist[\/]''',
+  '''(^|[\/])target[\/]''',
+  '''^backend/src/test/resources/application\.(properties|ya?ml)$''',
+  '''^backend/data/''',
+  '''^\.claude/harness/hashes\.json$''',
+]
