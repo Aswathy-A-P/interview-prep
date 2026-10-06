@@ -1,0 +1,130 @@
+{
+  "files": {
+    "CLAUDE.md": "9dbd36c6f2af9dd982b116136e77eb1d0c6407ae43ac567f7da354214975163e",
+    ".gitleaks.toml": "bbaba8f13cf8e47d02288358dd507de8c4c662f2ab05b33a68e2a6e1cd3b668b",
+    ".github/PULL_REQUEST_TEMPLATE.md": "df41954df99a1fe44e11510a1fa0d091e9314eae075d596315cfaad1eae019b9",
+    ".github/CODEOWNERS": "f98ecc0447162bc42fb2fe1a704de7fb6ca7bc3e9208578384b2f0714cd55833",
+    ".claude/conventions/sibling-repos.md": "fd38809e75e4847a8934b17ab656e71805cfc140dfd9822dfd2157b977ac50c8",
+    ".claude/conventions/comment-conventions.md": "d358436b7a9943c3ec0d5381e9eccb0658f25f8e422ad10d891740168e4e4abf",
+    ".claude/conventions/git-hygiene.md": "79ee393aae3893775ed2b0837b3dafd26ebd932edc1e9bbc687b9ac98cfab603",
+    ".claude/conventions/github-pr.md": "42ae4cbf51a28d0f07217eb509ef2fff015d7e7039ff283813753785aeea73c3",
+    ".claude/conventions/review-conventions.md": "c52bb44fc3699f961f48d3fd6ea4b1012db74362cdb304ead3812eda6bd03153",
+    ".claude/conventions/review-template.md": "6595a296769da0dc476ff1b65fbd8dc8be21cfd44b7c853df6dd7fdd54dabf82",
+    ".claude/skills/fix-workspace-trust/SKILL.md": "ffa86a413530dc40c50af99bae9e694c8650ed3a37809a1a99c386d56cb6081d",
+    ".claude/skills/create-issue/SKILL.md": "9ab91c46c49fea63d1a9f51ba19de3e87cb074639d151836d136aa18e45eadc8",
+    ".claude/skills/start-issue/SKILL.md": "37f5e4a049433889dd2f448d93267582323b7fea10f2e01afe9e73328650824e",
+    ".claude/skills/raise-pr/SKILL.md": "41a1306db58afb5b13d5a6f144ed244237abc9c185f767be2634f9d6136b277e",
+    ".claude/skills/pr-review/SKILL.md": "5bb8591e525ff22cafbeb5266609f052061f5492c867eb65f1a782b758ef005b",
+    ".claude/skills/fix-review-comments/SKILL.md": "e235529e969060171e0f65b01790bb0918821272ca39787441010d9a18b23e87",
+    ".claude/skills/triage-issues/SKILL.md": "60a64591f741891c4376fa34334adfb300c3d575a708626b0cd3e434513dab3c",
+    ".claude/hooks/block-secrets.cjs": "508e0bd7bf7123db9bac524c3f70d60a03a7dba421687324a8818f5e810b461e",
+    ".claude/hooks/block-unsafe-bash.cjs": "8d2c8dff8c11c7ee4bed3a0721581b6e01d736e96fcf8a9012318d2e3e6c25e7",
+    ".claude/hooks/protect-branches.cjs": "326a532c827032d3b573ed3dd9f35e811e1de5b3d205e6ad59cd512f7f82bd48",
+    ".claude/hooks/protect-shared-files.cjs": "a47f6226d339717ee266295b283ce32d4e7a68e6d18385c69c48e15b8a24fe0b",
+    ".claude/hooks/tests/_assert.cjs": "a50f5b059b345b194eac54b57df58f0a30f459a3af9e1042655e8252a2c5311c",
+    ".claude/hooks/tests/run-all.cjs": "b71776f077e99c897915936c799ae4bc137504e0d922bbb3ec9107413e043645",
+    ".claude/hooks/tests/block-secrets.test.cjs": "00c3ec6b446f7f1554ad57e53994e54f16158d10095d40907b651cfafafc1f9c",
+    ".claude/hooks/tests/block-unsafe-bash.test.cjs": "41f926fd5761c970d616ede28505469c036edef49b4cfe82e7b7fbaccb9f2aaf",
+    ".claude/hooks/tests/protect-branches.test.cjs": "7d337634612904d6dee655cd1c8acd172c62366a3766f6c026b2e79d62e446cf",
+    ".claude/hooks/tests/protect-shared-files.test.cjs": "1ea27ae4db744326be861b4bc90ad22227902d54b51846f5c0a11df78bbe7493",
+    ".claude/harness/shared-files.cjs": "9242f0570f845248e156d4a458f3c04461161fcabb2eeb6b155293685b353639",
+    ".claude/harness/verify.cjs": "ba83c8f141d1e717d4f7ff43dd559dafaef7d65a560c8cebce77fbe70d1a18d3",
+    ".claude/harness/manifest.json": "a9503486ac7a0ecbe51e106fe28d1daf0d0f6c5cb297a6150fa5c39a0361bb90",
+    ".github/workflows/harness-check.yml": "4cb4581dc0b0049cd329b274eca1f086e53793db11ba56a7bd8dfaa58fceb32d",
+    ".claude/skills/pr-review-ci/SKILL.md": "63caa1b45959f4bac3120baadcc654fa53b4652b6c7b98870b549100b296649f",
+    ".claude/hooks/review-guard.cjs": "8f0e7e2ce7595b6d56139e5de092088bc0a7c56668b73022d59c7ae6d5a12fc9",
+    ".github/workflows/claude-pr-review.yml": "a9ffc3c3450640a1f69e868714d36ee0e4bde529f1b73a01391edbccf25640b7",
+    ".claude/review/_gh.cjs": "474766d4885387df32f4e222f50cdf6436909e0f8b49568e0474fce129228407",
+    ".claude/review/fetch-backlog.cjs": "ff7cfeee9244250938c02879f9062f4318f552bf744e959ab87ea269b5731cb8",
+    ".claude/review/fetch-diff.cjs": "acc41c2072f841cd6275ec59dbaed401f305b5c66c55cc50f210c540b688707b",
+    ".claude/review/fetch-discussion.cjs": "5229e39f1d661a99818fd477a2679f7c4d5ec370d3eda2d9a5927ffb317f7269",
+    ".claude/review/fetch-issue.cjs": "2c5214b244ce17471c02887b65423b0fc45e44e058e28b9ea24205a87470f216",
+    ".claude/review/fetch-pr.cjs": "2c88da68506339acd1af47fae591cca067d6186fbf82dbebbc7d70b8a80ec7f7",
+    ".claude/review/post-review.cjs": "c1957c6ac4b93ba846ea84e4ded9c7ec53e5137bff7da2eca4c519ffdf1743b2",
+    ".claude/review/render-stream.cjs": "4f51ff51cb8a86a1b19d9c6ecf23f88f70e81269d3e0f354960dd46bfbb4b241",
+    ".claude/review/review.settings.json": "4fe6def4f57fceabca550a11bd7989e8785e279233816a68229913891ca0e866",
+    ".claude/review/verify-rules.cjs": "b168faeafa63ea6c316bffa3f0401af146d3f013b0b43e2a50e7e98a47b63378",
+    ".claude/hooks/tests/review-guard.test.cjs": "237871c00bf969715933b69670ac744cd532b9495a954929bad03a89e08217b9"
+  },
+  "unfilled": {
+    "CLAUDE.md": [
+      "- **Repo**: <edstem-tech/<repo> — one sentence on what it is>",
+      "- **Stack**: <one line; name every stack in a multi-stack repo>",
+      "- **Package Manager**: <npm | pnpm | poetry | uv | maven | flutter>",
+      "- **Default Branch**: <main | develop | dev>",
+      "- **Protected Branches**: <comma-separated list>",
+      "- **Promotion Chain**: <… | NULL>",
+      "- **Branch Name**: <e.g. LAM-<issue-number>[-slug] | <type>/<short-slug>>",
+      "- **Ticket Prefix**: <LAM- | STAR- | SF- | IF- | NULL>",
+      "- **PR Title**: <format>",
+      "- **PR Title Regex**: <regex | NULL>",
+      "- **Project Board**: <URL | NULL>",
+      "- **Assign On Start**: <yes | no>",
+      "- **Milestones**: <yes | no>",
+      "- **Gate Commands**: <one per line, as a nested list>",
+      "- **Version Bump**: <files and rule | NULL>",
+      "- **Merge Method**: <squash | merge commit; post-merge steps if any>",
+      "- **Conventions Skills**: <names>",
+      "- **Reviewer Agents**: <names>",
+      "- **Label Routing**: <NULL, or the table below>",
+      "- **Repo-specific skills**: <`/<skill>`: one line, or NULL>",
+      "- **CI Approves**: <yes | no — CI-review repos only; omit this line elsewhere>"
+    ],
+    ".gitleaks.toml": [],
+    ".github/PULL_REQUEST_TEMPLATE.md": [],
+    ".github/CODEOWNERS": [],
+    ".claude/conventions/sibling-repos.md": [
+      "- **Project**: <LambdaBooks | SetFit | StarRate | edX website | NULL>",
+      "| edstem-tech/<repo> | ../<repo> | <branch> | <one line> |"
+    ],
+    ".claude/skills/react-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs>"
+    ],
+    ".claude/skills/python-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs>"
+    ],
+    ".claude/skills/java-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs>"
+    ],
+    ".claude/skills/flutter-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs>"
+    ],
+    ".claude/skills/react-native-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs>"
+    ],
+    ".claude/agents/senior-react-engineer.md": [],
+    ".claude/agents/senior-python-engineer.md": [],
+    ".claude/agents/senior-java-engineer.md": [],
+    ".claude/agents/senior-flutter-engineer.md": [],
+    ".claude/agents/senior-react-native-engineer.md": [],
+    ".claude/skills/STACK-conventions/SKILL.md": [
+      "- **Scope**: <directories this skill governs, e.g. `src/`>",
+      "- <rule>",
+      "- <rule>",
+      "- <rule>",
+      "- <rule a reviewer treats as blocking, one per line>",
+      "- <one clause per line>"
+    ],
+    ".claude/agents/senior-STACK-engineer.md": []
+  },
+  "utilExports": [
+    "DOUBLE_QUOTE_SPECIAL",
+    "EVAL",
+    "GIT",
+    "GIT_OPTION",
+    "SHELL",
+    "SHELL_COMMAND",
+    "SHELL_C_OPTION",
+    "allow",
+    "block",
+    "closingQuote",
+    "commandStart",
+    "extractFileEdit",
+    "permit",
+    "quotedBody",
+    "readPayload",
+    "surfaceToModel",
+    "unquoted",
+    "withoutHeredocBodies"
+  ]
+}

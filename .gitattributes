@@ -1,0 +1,3 @@
+# Normalize all text files to LF in the repository so tooling that rewrites
+# files (e.g. jq) on Windows can't flip line endings and pollute diffs.
+* text=auto eol=lf

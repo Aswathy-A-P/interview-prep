@@ -1,0 +1,36 @@
+name: Harness check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: harness-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  harness:
+    runs-on: ${{ fromJSON(format(vars.HARNESS_CHECK_RUNNER || '["ubuntu-latest"]', github.run_id, github.run_attempt)) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify this repo against the shared harness
+        run: node .claude/harness/verify.cjs
+
+      - name: Run the guardrail hook tests
+        run: node .claude/hooks/tests/run-all.cjs
+
+      - name: Run the install and verify tests, where this repo carries them
+        run: |
+          if [ -f .claude/harness/tests/run-all.cjs ]; then
+            node .claude/harness/tests/run-all.cjs
+          else
+            echo "this repo installs the harness rather than publishing it, so it carries no harness tests"
+          fi
