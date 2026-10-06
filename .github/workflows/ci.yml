@@ -83,6 +83,7 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck --if-present
       - run: npm test -- --run
       - run: npm run build
 
@@ -103,4 +104,24 @@ jobs:
           cache: maven
 
       - run: ./mvnw -B spotless:check
-      - run: ./mvnw -B test
+      - run: ./mvnw -B verify
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-report
+          path: backend/target/site/jacoco
+          if-no-files-found: ignore
+
+  images:
+    needs: [frontend, backend]
+    if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate the compose file
+        run: docker compose config --quiet
+
+      - name: Build the images
+        run: docker compose build

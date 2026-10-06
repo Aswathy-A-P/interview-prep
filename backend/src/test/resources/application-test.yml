@@ -1,0 +1,5 @@
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-0000
+  cors:
+    allowed-origins: http://localhost:5173
